@@ -2,16 +2,15 @@ require 'rubygems'
 require 'google/api_client'
 require 'yaml'
 require 'base64'
-require 'json'
 
 
-PROJECTID = '514219538978'
-BUCKET = '15ruby-api-test'
-METADATA_OBJECT = 'metadata_obj'
-MEDIA_OBJECT = 'media_obj'
-RESUMABLE_OBJECT = 'resumable_obj'
-MULTIPART_OBJECT = 'multipart_obj'
-TEXT_FILE = 'sample.txt'
+PROJECTID = '<YOUR PROJECT ID>'
+BUCKET = '<BUCKET NAME>'
+METADATA_OBJECT = '<OBJECT 1>'
+MEDIA_OBJECT = '<OBJECT 2>'
+RESUMABLE_OBJECT = '<OBJECT 3>'
+MULTIPART_OBJECT = '<OBJECT 4>'
+TEXT_FILE = 'FILENAME'
 
 # Setup authorization
 oauth_yaml = YAML.load_file('.google-api.yaml')
@@ -27,8 +26,13 @@ if client.authorization.refresh_token && client.authorization.expired?
 end
 
 
-# Create client
+# Create client 
+# This can also be v1beta2, with a few small changes to the code.
+# Currently, the only differences are:
+# 1. "projectId" -> "project"
+# 2. For buckets.insert, "project" goes in "parameters", not "body_object"
 storage = client.discovered_api('storage', 'v1beta1')
+
 
 # Get a specific object from a bucket
 bucket_get_result = client.execute(
@@ -48,7 +52,6 @@ puts "\n\nList of buckets: "
 puts bucket_list_result.data.items.map(&:id)
 
 
-=begin
 # Create a bucket in the project
 bucket_insert_result = client.execute(
   api_method: storage.buckets.insert,
@@ -58,7 +61,7 @@ bucket_insert_result = client.execute(
 p bucket_insert_result.data
 contents = bucket_insert_result.data
 puts "\n\nCreated bucket #{contents.id} at #{contents.selfLink}"
-=end
+
 
 # Insert a small object into a bucket using metadata
 media = Google::APIClient::UploadIO.new(TEXT_FILE, 'text/plain')
@@ -79,20 +82,10 @@ contents = metadata_insert_result.data
 puts "Metadata insert: #{contents.name} at #{contents.selfLink}"
 
 
-# Simple "media" upload - CURRENTLY BROKEN
-=begin
-media = Google::APIClient::UploadIO.new(TEXT_FILE, 'text/plain')
-media_insert_result = client.execute(
-  api_method: storage.objects.insert,
-  parameters: {uploadType: 'media', 
-    bucket: BUCKET, 
-    name: MEDIA_OBJECT
-  },
-  media: media
-)
-puts object_insert_result.body
-=end
-
+# There are three "normal" (i.e., not metadata) upload types.
+# "multipart" and "resumable" appear below, but at the time
+# of writing, the "media" option is not available in the 
+# Ruby API client.
 
 # Multipart upload
 media = Google::APIClient::UploadIO.new(TEXT_FILE, 'text/plain')
