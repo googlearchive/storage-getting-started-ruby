@@ -39,8 +39,9 @@ bucket_get_result = client.execute(
   api_method: storage.objects.get,
   parameters: {bucket: BUCKET, object: METADATA_OBJECT}
 )
-puts "\nContents of #{METADATA_OBJECT} in #{BUCKET}: "
+puts "Contents of #{METADATA_OBJECT} in #{BUCKET}: "
 puts bucket_get_result.body
+puts "\n"
 
 
 # List all buckets in the project
@@ -48,8 +49,9 @@ bucket_list_result = client.execute(
   api_method: storage.buckets.list,
   parameters: {projectId: PROJECTID}
 )
-puts "\n\nList of buckets: "
+puts "List of buckets: "
 puts bucket_list_result.data.items.map(&:id)
+puts "\n"
 
 
 # Create a bucket in the project
@@ -60,7 +62,7 @@ bucket_insert_result = client.execute(
 )
 p bucket_insert_result.data
 contents = bucket_insert_result.data
-puts "\n\nCreated bucket #{contents.id} at #{contents.selfLink}"
+puts "Created bucket #{contents.id} at #{contents.selfLink}\n"
 
 
 # Insert a small object into a bucket using metadata
@@ -79,7 +81,7 @@ metadata_insert_result = client.execute(
   }
 )
 contents = metadata_insert_result.data
-puts "Metadata insert: #{contents.name} at #{contents.selfLink}"
+puts "Metadata insert: #{contents.name} at #{contents.selfLink}\n"
 
 
 # There are three "normal" (i.e., not metadata) upload types.
@@ -100,14 +102,11 @@ multipart_insert_result = client.execute(
   media: media
 )
 contents = multipart_insert_result.data
-puts "Multipart insert:\n#{contents.name} at #{contents.selfLink}"
+puts "Multipart insert:\n#{contents.name} at #{contents.selfLink}\n"
 
 
 # Resumable upload
 resumable_media = Google::APIClient::UploadIO.new(TEXT_FILE, 'text/plain')
-metadata = {
- contentType: 'text/plain'
-}
 resumable_result = client.execute(
   api_method: storage.objects.insert,
   media: resumable_media,
@@ -116,15 +115,14 @@ resumable_result = client.execute(
     bucket: BUCKET,
     name: RESUMABLE_OBJECT
   },
-  body_object: metadata
+  body_object: { contentType: 'text/plain' }
 )
 # Does actual upload of file
 upload = resumable_result.resumable_upload
 if upload.resumable?
   client.execute(upload)
 end
-puts "\nResumable insert: "
-puts "Created object #{upload.parameters['name']}"
+puts "Resumable insert: Created object #{upload.parameters['name']}\n"
 
 
 
@@ -133,8 +131,9 @@ objects_list_result = client.execute(
   api_method: storage.objects.list,
   parameters: {bucket: BUCKET}
 )
-puts "\nList of objects in #{BUCKET}: "
+puts "List of objects in #{BUCKET}: "
 objects_list_result.data.items.each { |item| puts item.name }
+puts "\n"
 
 
 # Get a specific object from a bucket
@@ -142,8 +141,9 @@ bucket_get_result = client.execute(
   api_method: storage.objects.get,
   parameters: {bucket: BUCKET, object: METADATA_OBJECT}
 )
-puts "\nContents of #{METADATA_OBJECT} in #{BUCKET}: "
+puts "Contents of #{METADATA_OBJECT} in #{BUCKET}: "
 puts bucket_get_result.body
+puts "\n"
 
 
 # Delete object from bucket
@@ -151,8 +151,19 @@ object_delete_result = client.execute(
   api_method: storage.objects.delete,
   parameters: {bucket:BUCKET, object: RESUMABLE_OBJECT}
 )
-puts "\nDeleting #{RESUMABLE_OBJECT}: "
+puts "Deleting #{RESUMABLE_OBJECT}: "
 p object_delete_result.headers
+puts "\n"
+
+
+# Get object acl
+object_acl_get_result = client.execute(
+  api_method: storage.object_access_controls.get,
+  parameters: {bucket: BUCKET, object: METADATA_OBJECT, entity: 'allUsers'}
+)
+puts "Get object ACL: "
+acl = object_acl_get_result.data
+puts "Users #{acl.entity} can access #{METADATA_OBJECT} as #{acl.role}\n"
 
 
 # Insert object acl
@@ -161,19 +172,7 @@ object_acl_insert_result = client.execute(
   parameters: {bucket: BUCKET, object: METADATA_OBJECT},
   body_object: {entity: 'allUsers', role: 'READER'}
 )
-puts "\nInserting object ACL: #{object_acl_insert_result.body}"
-
-
-# Get object acl
-object_acl_get_result = client.execute(
-  api_method: storage.object_access_controls.get,
-  parameters: {bucket: BUCKET, object: METADATA_OBJECT, entity: 'allUsers'}
-)
-puts "\nGet object ACL: "
-contents = object_acl_get_result.data
-entity = contents.entity
-role = contents.role
-puts "Users #{entity} can access #{METADATA_OBJECT} as #{role}"
+puts "Inserting object ACL: #{object_acl_insert_result.body}\n"
 
 
 # Delete a bucket in the project
@@ -181,5 +180,5 @@ bucket_delete_result = client.execute(
   api_method: storage.buckets.delete,
   parameters: {bucket: BUCKET}
 )
-puts "\nDeleting #{BUCKET}: #{bucket_delete_result.body}"
+puts "Deleting #{BUCKET}: #{bucket_delete_result.body}\n"
 
