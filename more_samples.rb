@@ -151,9 +151,11 @@ object_delete_result = client.execute(
   api_method: storage.objects.delete,
   parameters: {bucket:BUCKET, object: RESUMABLE_OBJECT}
 )
-puts "Deleting #{RESUMABLE_OBJECT}: "
-p object_delete_result.headers
-puts "\n"
+if object_delete_result.response.status == 204
+  puts "Successfully deleted #{RESUMABLE_OBJECT}.\n"
+else
+  puts "Failed to delete #{RESUMABLE_OBJECT}.\n"
+end
 
 
 # Get object acl
