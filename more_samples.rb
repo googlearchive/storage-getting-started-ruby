@@ -57,16 +57,14 @@ puts "\n"
 # Create a bucket in the project
 bucket_insert_result = client.execute(
   api_method: storage.buckets.insert,
-  parameters: {},
   body_object: {id: BUCKET, projectId: PROJECTID}
 )
 p bucket_insert_result.data
 contents = bucket_insert_result.data
-puts "Created bucket #{contents.id} at #{contents.selfLink}\n"
+puts "Created bucket #{contents.id} at #{contents.self_link}\n"
 
 
 # Insert a small object into a bucket using metadata
-media = Google::APIClient::UploadIO.new(TEXT_FILE, 'text/plain')
 object_content = 'Insert content here.'
 metadata_insert_result = client.execute(
   api_method: storage.objects.insert,
@@ -81,7 +79,7 @@ metadata_insert_result = client.execute(
   }
 )
 contents = metadata_insert_result.data
-puts "Metadata insert: #{contents.name} at #{contents.selfLink}\n"
+puts "Metadata insert: #{contents.name} at #{contents.self_link}\n"
 
 
 # There are three "normal" (i.e., not metadata) upload types.
@@ -102,7 +100,7 @@ multipart_insert_result = client.execute(
   media: media
 )
 contents = multipart_insert_result.data
-puts "Multipart insert:\n#{contents.name} at #{contents.selfLink}\n"
+puts "Multipart insert:\n#{contents.name} at #{contents.self_link}\n"
 
 
 # Resumable upload
