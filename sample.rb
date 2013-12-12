@@ -3,7 +3,7 @@ require 'highline/import'
 require './oauth_util'
 
 # Constants for use as request parameters.
-API_VERSION = 'v1beta1'
+API_VERSION = 'v1beta2'
 DEFAULT_PROJECT = 'YOUR_PROJECT_ID'
 DEFAULT_BUCKET = 'YOUR_DEFAULT_BUCKET'
 DEFAULT_OBJECT = 'YOUR_DEFAULT_OBJECT'
