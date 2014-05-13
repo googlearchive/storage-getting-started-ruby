@@ -33,7 +33,7 @@ api_request_selection_map = {
 # Linking each API request to appropriate request parameters.
 api_request_parameter_map = {
   storage.buckets.list => {
-    'projectId' => DEFAULT_PROJECT
+    'project' => DEFAULT_PROJECT
   },
   storage.objects.list => {
     'bucket' => DEFAULT_BUCKET
