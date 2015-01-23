@@ -3,11 +3,11 @@ require 'highline/import'
 require './oauth_util'
 
 # Constants for use as request parameters.
-API_VERSION = 'v1beta2'
 DEFAULT_PROJECT = 'YOUR_PROJECT_ID'
 DEFAULT_BUCKET = 'YOUR_DEFAULT_BUCKET'
 DEFAULT_OBJECT = 'YOUR_DEFAULT_OBJECT'
 DEFAULT_ENTITY = 'YOUR_DEFAULT_ENTITY'
+API_VERSION = 'v1'
 
 # Creating a new API client and loading the Google Cloud Storage API.
 client = Google::APIClient.new
@@ -33,7 +33,7 @@ api_request_selection_map = {
 # Linking each API request to appropriate request parameters.
 api_request_parameter_map = {
   storage.buckets.list => {
-    'projectId' => DEFAULT_PROJECT
+    'project' => DEFAULT_PROJECT
   },
   storage.objects.list => {
     'bucket' => DEFAULT_BUCKET
