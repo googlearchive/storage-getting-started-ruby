@@ -22,7 +22,8 @@ class CommandLineOAuthHelper
   def authorize
     auth = @authorization
     url = @authorization.authorization_uri().to_s
-    server = Thin::Server.new('0.0.0.0', 3000) do
+
+    server = Thin::Server.new('localhost', 3000) do
       run lambda { |env|
           # Exchange the auth code & quit
           req = Rack::Request.new(env)
